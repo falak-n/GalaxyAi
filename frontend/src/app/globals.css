@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* NextFlow / Krea-like design tokens (Tailwind v4 @theme — equivalent to extending tailwind.config colors) */
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+
+  --color-nf-bg: #0b0b0f;
+  --color-nf-panel: #111118;
+  --color-nf-card: #181822;
+  --color-nf-line: #262637;
+  --color-nf-muted: #9ca3af;
+  --color-nf-text: #f3f4f6;
+
+  --color-nf-primary: #7c3aed;
+  --color-nf-primary-hover: #6d28d9;
+  --color-nf-glow: rgba(124, 58, 237, 0.6);
+
+  --color-nf-success: #22c55e;
+  --color-nf-error: #ef4444;
+  --color-nf-warning: #f59e0b;
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+}
+
+.nf-node-running {
+  animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+/* Base node shell: hover lift + primary border */
+.react-flow__node .nf-node-card {
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.react-flow__node .nf-node-card:hover {
+  border-color: var(--color-nf-primary);
+  transform: translateY(-2px);
+}
+
+.react-flow__node.selected .nf-node-card {
+  border-color: var(--color-nf-primary);
+  box-shadow:
+    0 0 0 2px rgba(124, 58, 237, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.react-flow__node.selected .nf-node-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Smooth feel for workflow chrome (scoped — avoids animating the entire document) */
+.nf-workflow-ui :where(button, input, textarea, select) {
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}

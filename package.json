@@ -1,0 +1,8 @@
+{
+  "name": "nextflow",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "postinstall": "npm run prisma:generate -w @nextflow/backend && npm run db:generate -w frontend"
+  }
+}

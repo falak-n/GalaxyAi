@@ -161,11 +161,15 @@ export default function WorkflowShell() {
     setErr(null);
     setBusy(true);
     try {
-      await fetch(`/api/workflows/${workflowId}`, {
+      const res = await fetch(`/api/workflows/${workflowId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: workflowName, graph: { nodes, edges } }),
       });
+      if (!res.ok) {
+        const j = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(j.error ?? `Save failed (${res.status})`);
+      }
       await refreshRuns();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Save failed");
@@ -191,6 +195,12 @@ export default function WorkflowShell() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode, targetIds, nodes, edges }),
       });
+      if (res.status === 404) {
+        localStorage.removeItem("nextflow_wf_id");
+        setErr("Workflow not found. Reloading…");
+        setTimeout(() => window.location.reload(), 300);
+        return;
+      }
       const j = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error((j as { error?: string }).error || "Run failed");
       const runId = (j as { runId: string }).runId;

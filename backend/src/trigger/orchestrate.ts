@@ -132,7 +132,7 @@ export const workflowOrchestrate = task({
               if (node.type === "cropImage") {
                 const imgEdges = incoming(nodeId, "image_url", edges);
                 const imageUrl = imgEdges.length
-                  ? sourceValue(imgEdges[0]!.source, nodesById, outputs)
+                  ? sourceValue(imgEdges[0]!.source, outputs)
                   : data.imageUrl
                     ? String(data.imageUrl)
                     : "";
@@ -150,7 +150,7 @@ export const workflowOrchestrate = task({
                   widthPercent: wp,
                   heightPercent: hp,
                 });
-                if (!handle.ok) throw new Error(handle.error?.message || "crop failed");
+                if (!handle.ok) throw new Error((handle.error as { message?: string } | undefined)?.message || "crop failed");
                 const url = (handle.output as { url: string }).url;
                 outputs.set(node.id, url);
                 await mark(runId, node.id, {
@@ -164,7 +164,7 @@ export const workflowOrchestrate = task({
               if (node.type === "extractFrame") {
                 const vEdges = incoming(nodeId, "video_url", edges);
                 const videoUrl = vEdges.length
-                  ? sourceValue(vEdges[0]!.source, nodesById, outputs)
+                  ? sourceValue(vEdges[0]!.source, outputs)
                   : data.videoUrl
                     ? String(data.videoUrl)
                     : "";
@@ -175,7 +175,7 @@ export const workflowOrchestrate = task({
                   videoUrl,
                   timestamp: ts,
                 });
-                if (!handle.ok) throw new Error(handle.error?.message || "extract failed");
+                if (!handle.ok) throw new Error((handle.error as { message?: string } | undefined)?.message || "extract failed");
                 const url = (handle.output as { url: string }).url;
                 outputs.set(node.id, url);
                 await mark(runId, node.id, {
@@ -199,7 +199,7 @@ export const workflowOrchestrate = task({
                   userMessage: user,
                   imageUrls: imgs.length ? imgs : undefined,
                 });
-                if (!handle.ok) throw new Error(handle.error?.message || "llm failed");
+                if (!handle.ok) throw new Error((handle.error as { message?: string } | undefined)?.message || "llm failed");
                 const text = (handle.output as { text: string }).text;
                 outputs.set(node.id, text);
                 await mark(runId, node.id, {
@@ -233,12 +233,13 @@ export const workflowOrchestrate = task({
         data: { status: "completed", completedAt: new Date() },
       });
       return { ok: true as const };
-    } catch {
+    } catch (e) {
       await prisma.workflowRun.update({
         where: { id: runId },
         data: { status: "failed", completedAt: new Date() },
       });
-      throw new Error("workflow failed");
+      const msg = e instanceof Error ? e.message : "workflow failed";
+      throw new Error(msg);
     }
   },
 });

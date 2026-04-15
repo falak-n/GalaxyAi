@@ -27,7 +27,7 @@ const blockedWithoutClerk: NextMiddleware = (req) => {
   return NextResponse.redirect(new URL("/sign-in", req.url));
 };
 
-export default useClerk ? clerkMw : blockedWithoutClerk;
+export const proxy = useClerk ? clerkMw : blockedWithoutClerk;
 
 export const config = {
   matcher: [

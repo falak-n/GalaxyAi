@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.2",
-    "@nextflow/backend": "*",
+    "@nextflow/backend": "file:../backend",
     "@prisma/client": "^6.19.0",
     "@trigger.dev/sdk": "3.3.17",
     "@xyflow/react": "^12.10.0",
